@@ -6,6 +6,7 @@ const authController = require('../Controllers/authControllers')
 
 
 auth_router.post('/sign-up',authController.signUp);
+auth_router.post('/sign-in',authController.signIn);
 
 
 
