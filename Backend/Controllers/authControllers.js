@@ -17,7 +17,7 @@ const signUp = async (req,res,next)=>{
         res.status(201).json({message:"User created succesfully ._."})
         
     } catch (error) {
-        next(errorHandler(300,"some wrongs"))
+        next(errorHandler(300,"somthing went wrong"))
         console.log("======SIGNUP=======",error.message);
     }
 };

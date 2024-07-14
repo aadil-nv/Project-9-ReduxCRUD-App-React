@@ -12,8 +12,8 @@ const authRoutes = require('./Routes/authRoutes');
 
 mongoose.connect(URI).then((data)=>console.log("mongodb connected atlas success".bgBrightBlue.bold.underline));
 app.use(express.json());
-app.use('/users',userRoutes);
-app.use('/auth',authRoutes);
+app.use('/api/users',userRoutes);
+app.use('/api/auth',authRoutes);
 
 app.use((error,req,res,next)=>{
     const statusCode = error.statusCode || 500;
