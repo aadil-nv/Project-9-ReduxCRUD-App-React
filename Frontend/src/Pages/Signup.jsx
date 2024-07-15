@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/toast";
 
 function Signup() {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
+  const navigate = useNavigate()
   const toast = useToast();
 
   const handleChange = (e) => {
@@ -40,10 +40,8 @@ function Signup() {
       }
 
       toast({
-        description: "account created successfully",
-        status: "success",
-        duration: 3000,
-      });
+        description: "account created successfully please signin",status: "success",duration: 3000,});
+        navigate('/sign-in')
     } catch (error) {
       setLoading(false);
       setError(true);
@@ -58,7 +56,7 @@ function Signup() {
 
   return (
     <div className="p-3 max-w-lg mx-auto">
-      <h1 className="text-3xl text-center font-extrabold my-7">Signup page</h1>
+      <h1 className="text-3xl text-center font-extrabold my-7">Sign-Up</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="text"
