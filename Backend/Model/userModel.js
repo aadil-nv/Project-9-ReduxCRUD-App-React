@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    profilepicture :{
+        type:String,
+        default :"https://shorturl.at/zTElG"
+    }
 
 },{timestamps:true});
 

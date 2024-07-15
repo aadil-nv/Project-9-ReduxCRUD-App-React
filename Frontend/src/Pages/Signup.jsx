@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/toast";
+import OAuth from "../Components/OAuth";
 
 function Signup() {
   const [formData, setFormData] = useState({});
@@ -88,6 +89,7 @@ function Signup() {
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
+        <OAuth/>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account</p>
