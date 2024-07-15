@@ -53,13 +53,14 @@ const googleAuth = async(req,res,next)=>{
             res.cookie('access_token',token , {httpOnly : true,expier:expiryDate}).status(200).json(rest)
 
         }else{
+            console.log("=============MY PICTURE===================",req.body.photo)
             const generatePassword = Math.random().toString(36).slice(-8);
             const hashedPassword = bcrypt.hashSync(generatePassword,10);
-            const newUser = new User({
+            const newUser =  new User({
                 username:req.body.name.split(" ").join('').toLowerCase() + Math.floor(Math.random()* 10000).toString(),
                 email:req.body.email,
                 password:hashedPassword,
-                profilePicture:req.body.photo
+                profilepicture:req.body.photo || "https://shorturl.at/zTElG"
             });
 
             await newUser.save()

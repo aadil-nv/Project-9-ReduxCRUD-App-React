@@ -29,6 +29,7 @@ function OAuth() {
             })
 
             const data = await res.json();
+            console.log(result.user.photoURL);
             dispatch(signInSuccess(data));
             
 
@@ -40,7 +41,7 @@ function OAuth() {
     }
   return (
     <div>
-      <button className="bg-red-700 text-white p-3  rounded-lg uppercase hover:opacity-95 "  
+      <button className="bg-red-700 text-white p-3  rounded-lg uppercase hover:opacity-95 w-full "  
       onClick={handleGoogleClick}>
         Continue with google
       </button>

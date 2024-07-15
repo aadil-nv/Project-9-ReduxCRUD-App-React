@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     profilepicture :{
         type:String,
-        default :"https://shorturl.at/zTElG"
+       
     }
 
 },{timestamps:true});
