@@ -31,7 +31,7 @@ function OAuth() {
             const data = await res.json();
             console.log(result.user.photoURL);
             dispatch(signInSuccess(data));
-            
+            navigate('/')
 
             
         } catch (error) {

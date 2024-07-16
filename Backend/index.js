@@ -8,10 +8,12 @@ const PORT = process.env.PORT;
 const URI = process.env.URI;
 const userRoutes = require('./Routes/userRoutes');
 const authRoutes = require('./Routes/authRoutes');
+const cookieParser = require('cookie-parser')
 
 
 mongoose.connect(URI).then((data)=>console.log("mongodb connected atlas success".bgBrightBlue.bold.underline));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/users',userRoutes);
 app.use('/api/auth',authRoutes);
 

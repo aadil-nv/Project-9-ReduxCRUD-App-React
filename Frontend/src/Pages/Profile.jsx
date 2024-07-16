@@ -1,8 +1,10 @@
 import { useSelector } from 'react-redux';
 import { useRef, useState, useEffect } from 'react';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"; 
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { app } from '../fireBase';
 import { useToast } from "@chakra-ui/react";
+import { useDispatch } from 'react-redux';
+import { updateUserStart, updateUserSuccess, updateUserFailure } from '../Redux/user/userSlice';
 
 function Profile() {
   const fileRef = useRef();
@@ -11,7 +13,7 @@ function Profile() {
   const [formData, setFormData] = useState({});
   const [uploadComplete, setUploadComplete] = useState(false);
   const toast = useToast();
-
+  const dispatch = useDispatch();
   const { currentUser } = useSelector(state => state.user);
 
   useEffect(() => {
@@ -91,10 +93,67 @@ function Profile() {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(updateUserStart());
+
+    try {
+      console.log("1");
+     
+      const res = await fetch(`/api/users/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      console.log("2");
+
+      const data = await res.json();
+      console.log("5");
+      console.log("6");
+      console.log("data is <>>>",data)
+      dispatch(updateUserSuccess(data));
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      if (!res.ok) {
+        console.log("3");
+        const errorData = await res.json();
+        dispatch(updateUserFailure(errorData));
+        console.log("4");
+        toast({
+          title: "Update Failed",
+          description: errorData.message || "An error occurred while updating your profile.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      
+    } catch (error) {
+      dispatch(updateUserFailure(error));
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-extrabold text-center my-7'>Profile</h1>
-      <form className='flex flex-col items-center gap-4'>
+      <form className='flex flex-col items-center gap-4' onSubmit={handleSubmit}>
         <input type="file" ref={fileRef} hidden accept='image/*' onChange={handleFileChange} />
 
         <img
@@ -103,16 +162,16 @@ function Profile() {
           className='h-24 w-24 cursor-pointer rounded-full object-cover mt-2'
           onClick={() => fileRef.current.click()}
         />
-        { imagePercentage > 0 && !uploadComplete && (
-        <div className='w-full bg-gray-200 rounded-full mt-4'>
-          <div
-            className='bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full'
-            style={{ width: `${imagePercentage}%` }}
-          >
-            {imagePercentage}%
+        {imagePercentage > 0 && !uploadComplete && (
+          <div className='w-full bg-gray-200 rounded-full mt-4'>
+            <div
+              className='bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full'
+              style={{ width: `${imagePercentage}%` }}
+            >
+              {imagePercentage}%
+            </div>
           </div>
-        </div>
-      )}
+        )}
         <input
           type="text"
           placeholder="username"
