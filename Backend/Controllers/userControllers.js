@@ -41,9 +41,32 @@ const updateUser = async (req, res, next) => {
         );
         res.status(200).json(updatedUser);
     } catch (error) {
-        next(error); // Properly pass the error to the error handling middleware
+        next(error); 
     }
 };
+
+
+
+const deleteUser = async (req,res,next)=>{
+    console.log("----------------delete us er is called --------");
+    console.log("req.user.id---",req.user.id);
+    console.log("req.params.id---",req.params.id);
+
+    if(req.user.id !== req.params.id){
+        return next(errorHandler(401,"You can only delete your account"))
+    }
+
+    try {
+        await User.findByIdAndDelete({_id:req.params.id});
+        res.status(200).json('User has been deleted')
+    } catch (error) {
+        next(error)
+    }
+}
+
+const signOut = async (req,res,next)=>{
+    res.clearCookies('access_token').status(200).json("Signout successfully")
+}
 
 
 
@@ -52,5 +75,5 @@ const updateUser = async (req, res, next) => {
 //todo---------------------------------------------------------------------------------
 
 module.exports={
-    test,updateUser
+    test,updateUser,deleteUser,signOut
 }

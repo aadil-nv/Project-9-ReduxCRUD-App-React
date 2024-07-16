@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRef, useState, useEffect } from 'react';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../fireBase';
-import { useToast } from "@chakra-ui/react";
-import { useDispatch } from 'react-redux';
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '../Redux/user/userSlice';
+import { useToast } from '@chakra-ui/react';
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUser,signOut } from '../Redux/user/userSlice';
 
 function Profile() {
   const fileRef = useRef();
@@ -73,7 +73,7 @@ function Profile() {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setFormData((prevFormData) => ({ ...prevFormData, profilePicture: downloadURL }));
           setUploadComplete(true);
-          setTimeout(() => setImagePercentage(0), 1000);  // Hide the progress bar after 1 second
+          setTimeout(() => setImagePercentage(0), 1000);
           toast({
             title: "Image Upload Successful",
             description: "Your profile picture has been updated.",
@@ -96,50 +96,28 @@ function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(updateUserStart());
-
     try {
-      console.log("1");
-     
       const res = await fetch(`/api/users/update/${currentUser._id}`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
-      console.log("2");
-
       const data = await res.json();
-      console.log("5");
-      console.log("6");
-      console.log("data is <>>>",data)
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update user');
+      }
       dispatch(updateUserSuccess(data));
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
+        title: "Profile Update Successful",
+        description: "Your profile has been updated.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-
-      if (!res.ok) {
-        console.log("3");
-        const errorData = await res.json();
-        dispatch(updateUserFailure(errorData));
-        console.log("4");
-        toast({
-          title: "Update Failed",
-          description: errorData.message || "An error occurred while updating your profile.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      
     } catch (error) {
-      dispatch(updateUserFailure(error));
+      dispatch(updateUserFailure(error.message));
       toast({
         title: "Update Failed",
         description: error.message,
@@ -150,12 +128,63 @@ function Profile() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to delete account');
+      }
+      dispatch(deleteUser());
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been deleted.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+
+  const handleSignOut = async ()=>{
+    try {
+      await fetch('api/auth/sign-out')
+      dispatch(signOut())
+      toast({
+        title: "Signout successfully",
+        description: "Your account has been deleted.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Signout Failed",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      
+    }
+  }
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-extrabold text-center my-7'>Profile</h1>
       <form className='flex flex-col items-center gap-4' onSubmit={handleSubmit}>
         <input type="file" ref={fileRef} hidden accept='image/*' onChange={handleFileChange} />
-
         <img
           src={formData.profilePicture || currentUser.profilepicture}
           alt='profile_pic'
@@ -199,10 +228,13 @@ function Profile() {
           UPDATE
         </button>
       </form>
-      
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span className='text-red-700 cursor-pointer' onClick={handleDeleteAccount}>
+          Delete Account
+        </span>
+        <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>
+          Sign Out
+        </span>
       </div>
     </div>
   );

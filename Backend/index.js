@@ -8,6 +8,7 @@ const PORT = process.env.PORT;
 const URI = process.env.URI;
 const userRoutes = require('./Routes/userRoutes');
 const authRoutes = require('./Routes/authRoutes');
+const adminRoutes = require('./Routes/adminRoutes');
 const cookieParser = require('cookie-parser')
 
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/users',userRoutes);
 app.use('/api/auth',authRoutes);
+app.use('/api/admin',adminRoutes)
 
 app.use((error,req,res,next)=>{
     const statusCode = error.statusCode || 500;

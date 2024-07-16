@@ -12,9 +12,9 @@ function OAuth() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const handleGoogleClick =async ()=>{
+    const handleGoogleClick =async (e)=>{
+      e.preventDefault()
         try {
-            
 
             const provider = new GoogleAuthProvider()
             const auth = getAuth(app)
@@ -29,7 +29,7 @@ function OAuth() {
             })
 
             const data = await res.json();
-            console.log(result.user.photoURL);
+         
             dispatch(signInSuccess(data));
             navigate('/')
 
